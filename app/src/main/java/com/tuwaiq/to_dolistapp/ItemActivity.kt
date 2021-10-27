@@ -3,6 +3,7 @@ package com.tuwaiq.to_dolistapp
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import androidx.appcompat.widget.Toolbar
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -29,6 +30,8 @@ class ItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_item)
         rvItem = findViewById(R.id.rv_item)
+        fabItem = findViewById(R.id.fab_item)
+        toolbar = findViewById(R.id.item_toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeButtonEnabled(true)
