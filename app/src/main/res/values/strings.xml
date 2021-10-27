@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">To-Do List App</string>
+    <string name="app_name">ToDo List</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="mark_as_completed">Mark As Completed</string>
+    <string name="reset">Reset</string>
 </resources>
