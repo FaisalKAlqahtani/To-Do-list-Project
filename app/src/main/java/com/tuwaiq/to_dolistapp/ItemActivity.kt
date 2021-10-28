@@ -26,6 +26,8 @@ class ItemActivity : AppCompatActivity() {
     private lateinit var fabItem : FloatingActionButton
     private lateinit var dbHandler: DBHandler
     private lateinit var rvItem: RecyclerView
+
+    // This is my main class that will create the ToDo list Items
     var todoid: Long = -1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +44,7 @@ class ItemActivity : AppCompatActivity() {
 
         rvItem.layoutManager = LinearLayoutManager(this)
 
+        // On add button the user will be able to insert task items
         fabItem.setOnClickListener {
             val dialog = AlertDialog.Builder(this)
             dialog.setTitle("Add ToDo item")
@@ -65,6 +68,7 @@ class ItemActivity : AppCompatActivity() {
         }
     }
 
+    // This function will let user be able to update their item on the list
     fun updateItem(item: ToDoItem){
         val dialog = AlertDialog.Builder(this)
         dialog.setTitle("Update ToDo item")
@@ -86,14 +90,17 @@ class ItemActivity : AppCompatActivity() {
         }
         dialog.show()
     }
+    // This function will call refreshList function
     override fun onResume() {
         refreshList()
         super.onResume()
     }
+    // This function will refresh the list after any operations immediately
     private fun refreshList(){
         rvItem.adapter = ItemAdapter(this, dbHandler.getToDoItems(todoid))
     }
 
+    // This class is my adapter that will hold my RecyclerView and menu operations for the items
     class ItemAdapter(private val activity: ItemActivity, private val list: MutableList<ToDoItem>) :
         RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
         override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
@@ -130,6 +137,7 @@ class ItemActivity : AppCompatActivity() {
             }
         }
 
+        //Nested class To view the taskItem name, edit and delete
         class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
             val itemName: CheckBox = v.findViewById(R.id.cb_item)
             val edit: ImageView = v.findViewById(R.id.iv_edit)
@@ -137,6 +145,7 @@ class ItemActivity : AppCompatActivity() {
         }
     }
 
+    // Allows for the option menu globally
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == android.R.id.home) {
             finish()

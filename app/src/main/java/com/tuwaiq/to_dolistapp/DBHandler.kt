@@ -8,9 +8,12 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.tuwaiq.to_dolistapp.DTO.ToDo
 import com.tuwaiq.to_dolistapp.DTO.ToDoItem
 
+
+//This class handles the Database interaction (Selection,Deletion, and Updating)
 class DBHandler(val context: Context): SQLiteOpenHelper(context, DB_NAME,null, DB_VERSION) {
     private val db = readableDatabase
     override fun onCreate(db: SQLiteDatabase?) {
+        // Using this query we can create two Tables
         val createToDoTable = "CREATE TABLE $TABLE_TODO (" +
                 "$COL_ID integer PRIMARY KEY AUTOINCREMENT," +
                 "$COL_CREATED_AT datetime DEFAULT CURRENT_TIMESTAMP," +
@@ -30,6 +33,9 @@ class DBHandler(val context: Context): SQLiteOpenHelper(context, DB_NAME,null, D
     override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {
 
     }
+
+    // These few functions acts as Dao for Dashboard Activity
+    //-------------------------------------------------------
     fun addToDo(toDo: ToDo): Boolean {
         val db = writableDatabase
         val cv = ContentValues()
@@ -82,6 +88,10 @@ class DBHandler(val context: Context): SQLiteOpenHelper(context, DB_NAME,null, D
         db.delete(TABLE_TODO,"$COL_ID=?", arrayOf(todoId.toString()))
     }
 
+    //-------------------------------------------------------
+
+
+    // Theses few functions acts as Dao for Item Activity(Inside tasks)
     @SuppressLint("Range")
     fun updateToDoItemCompletedStatus(todoId: Long, isCompleted: Boolean){
         val db: SQLiteDatabase = writableDatabase

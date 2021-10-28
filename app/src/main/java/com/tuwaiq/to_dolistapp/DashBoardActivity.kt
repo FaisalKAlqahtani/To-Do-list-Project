@@ -23,6 +23,8 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var rvDashboard: RecyclerView
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
 
+    // This is my main class that will create the ToDo list
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
@@ -35,6 +37,8 @@ class DashboardActivity : AppCompatActivity() {
         title = "Dashboard"
         dbHandler = DBHandler(this)
         rvDashboard.layoutManager = LinearLayoutManager(this)
+
+        // When the user clicks on add it will generate a dialog that will permit the user to add and name the task
 
         fab.setOnClickListener{
             val dialog = AlertDialog.Builder(this)
@@ -57,6 +61,8 @@ class DashboardActivity : AppCompatActivity() {
 
 
     }
+
+    // This function will enable the user to edit their own task
     fun updateToDo(toDo: ToDo){
         val dialog = AlertDialog.Builder(this)
         dialog.setTitle("Update ToDo")
@@ -77,16 +83,17 @@ class DashboardActivity : AppCompatActivity() {
         dialog.show()
     }
 
-
+    // This function will call refreshList function
     override fun onResume() {
         refreshList()
         super.onResume()
     }
 
+    // This function will refresh the list after any operations immediately
     private fun refreshList(){
         rvDashboard.adapter = DashboardAdapter(this,dbHandler.getToDos())
     }
-
+    // This class is my adapter that will hold my RecyclerView and menu operations
     class DashboardAdapter(private val activity: DashboardActivity,private val list: MutableList<ToDo>) :
         RecyclerView.Adapter<DashboardAdapter.ViewHolder>() {
         override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
@@ -110,6 +117,7 @@ class DashboardActivity : AppCompatActivity() {
                 popup.inflate(R.menu.dashboard_child)
                 popup.setOnMenuItemClickListener {
 
+                    // Used When loop to choose which option the user wants directly
                     when(it.itemId){
                         R.id.menu_edit->{
                             activity.updateToDo(list[p1])
@@ -141,7 +149,7 @@ class DashboardActivity : AppCompatActivity() {
                 popup.show()
             }
         }
-
+        // To view the task name and menu
         class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
             val toDoName: TextView = v.findViewById(R.id.tv_todo_name)
             val menu: ImageView = v.findViewById(R.id.iv_menu)
