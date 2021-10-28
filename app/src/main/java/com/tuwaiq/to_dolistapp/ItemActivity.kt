@@ -70,7 +70,7 @@ class ItemActivity : AppCompatActivity() {
         val toDoName = view.findViewById<EditText>(R.id.tv_todo)
         toDoName.setText(item.itemName)
         dialog.setView(view)
-        dialog.setPositiveButton("Add") { _: DialogInterface, _: Int ->
+        dialog.setPositiveButton("Update") { _: DialogInterface, _: Int ->
             if (toDoName.text.isNotEmpty()) {
                 item.itemName = toDoName.text.toString()
                 item.toDoId = todoid
