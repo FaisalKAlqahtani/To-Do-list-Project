@@ -51,6 +51,7 @@ class DashboardActivity : AppCompatActivity() {
                     val toDo = ToDo()
                     toDo.name = toDoName.text.toString()
                     dbHandler.addToDo(toDo)
+                    refreshList()
                 }
             }
             dialog.setNegativeButton("Cancel") { _: DialogInterface, _: Int ->
