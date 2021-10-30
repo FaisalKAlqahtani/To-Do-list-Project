@@ -34,7 +34,7 @@ Basically, I try to act as developer while working as a student, because in the 
 ## :camera_flash: Screenshots
 ---
 ### screenshot_1
-<img src="/results/screenshot_1.png" width="260">
+<img src="https://user-images.githubusercontent.com/91476808/139542566-65f154d7-3481-4865-a98f-d3e0e1f45cf9.png" width="260">
 
 ### screenshot_2
 <img src="/results/screenshot_2.png" width="260">
