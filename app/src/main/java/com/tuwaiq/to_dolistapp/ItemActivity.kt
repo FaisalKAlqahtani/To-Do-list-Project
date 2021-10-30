@@ -15,17 +15,21 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.tuwaiq.to_dolistapp.DTO.ToDo
 import com.tuwaiq.to_dolistapp.DTO.ToDoItem
+import java.util.*
 
 class ItemActivity : AppCompatActivity() {
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
     private lateinit var fabItem : FloatingActionButton
     private lateinit var dbHandler: DBHandler
     private lateinit var rvItem: RecyclerView
+    var list: MutableList<ToDoItem>? = null
+    var adapter: ItemAdapter? = null
 
     // This is my main class that will create the ToDo list Items
     var todoid: Long = -1
@@ -47,7 +51,7 @@ class ItemActivity : AppCompatActivity() {
         // On add button the user will be able to insert task items
         fabItem.setOnClickListener {
             val dialog = AlertDialog.Builder(this)
-            dialog.setTitle("Add ToDo item")
+            dialog.setTitle("Add ToDo item Description")
             val view = layoutInflater.inflate(R.layout.dialog_dashboard, null)
             val toDoName = view.findViewById<EditText>(R.id.tv_todo)
             dialog.setView(view)
@@ -66,6 +70,29 @@ class ItemActivity : AppCompatActivity() {
             }
             dialog.show()
         }
+
+        // This function will help the user sort their items by dragging up and down
+        val touchHelper = ItemTouchHelper(object: ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0){
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                val sourcePosition = viewHolder.adapterPosition
+                val targetPosition = target.adapterPosition
+                Collections.swap(list, sourcePosition, targetPosition)
+                adapter?.notifyItemMoved(sourcePosition, targetPosition)
+                return true
+            }
+
+            // No need for this function since im not swiping left or right
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                TODO("Not yet implemented")
+            }
+
+        })
+        touchHelper.attachToRecyclerView(rvItem)
     }
 
     // This function will let user be able to update their item on the list
@@ -97,7 +124,9 @@ class ItemActivity : AppCompatActivity() {
     }
     // This function will refresh the list after any operations immediately
     private fun refreshList(){
-        rvItem.adapter = ItemAdapter(this, dbHandler.getToDoItems(todoid))
+        list = dbHandler.getToDoItems(todoid)
+        adapter = ItemAdapter(this, list!!)
+        rvItem.adapter = adapter
     }
 
     // This class is my adapter that will hold my RecyclerView and menu operations for the items
