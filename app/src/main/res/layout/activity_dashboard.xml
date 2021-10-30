@@ -17,7 +17,7 @@
         android:id="@+id/rv_dashboard"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/dashboard_toolbar" />
+        android:layout_below="@id/dashboard_toolbar"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_dashboard"

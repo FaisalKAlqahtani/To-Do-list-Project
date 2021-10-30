@@ -2,6 +2,8 @@ package com.tuwaiq.to_dolistapp
 
 import android.os.FileObserver.CREATE
 
+// Created constants for the SQLite database
+
 const val DB_NAME = "ToDoList"
 const val DB_VERSION = 1
 const val TABLE_TODO = "ToDo"

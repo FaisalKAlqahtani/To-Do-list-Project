@@ -15,17 +15,23 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.tuwaiq.to_dolistapp.DTO.ToDo
 import com.tuwaiq.to_dolistapp.DTO.ToDoItem
+import java.util.*
 
 class ItemActivity : AppCompatActivity() {
     private lateinit var toolbar: androidx.appcompat.widget.Toolbar
     private lateinit var fabItem : FloatingActionButton
     private lateinit var dbHandler: DBHandler
     private lateinit var rvItem: RecyclerView
+    var list: MutableList<ToDoItem>? = null
+    var adapter: ItemAdapter? = null
+
+    // This is my main class that will create the ToDo list Items
     var todoid: Long = -1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,8 +48,10 @@ class ItemActivity : AppCompatActivity() {
 
         rvItem.layoutManager = LinearLayoutManager(this)
 
+        // On add button the user will be able to insert task items
         fabItem.setOnClickListener {
             val dialog = AlertDialog.Builder(this)
+            dialog.setTitle("Add ToDo item Description")
             val view = layoutInflater.inflate(R.layout.dialog_dashboard, null)
             val toDoName = view.findViewById<EditText>(R.id.tv_todo)
             dialog.setView(view)
@@ -62,15 +70,40 @@ class ItemActivity : AppCompatActivity() {
             }
             dialog.show()
         }
+
+        // This function will help the user sort their items by dragging up and down
+        val touchHelper = ItemTouchHelper(object: ItemTouchHelper.SimpleCallback(
+            ItemTouchHelper.UP or ItemTouchHelper.DOWN, 0){
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                val sourcePosition = viewHolder.adapterPosition
+                val targetPosition = target.adapterPosition
+                Collections.swap(list, sourcePosition, targetPosition)
+                adapter?.notifyItemMoved(sourcePosition, targetPosition)
+                return true
+            }
+
+            // No need for this function since im not swiping left or right
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                TODO("Not yet implemented")
+            }
+
+        })
+        touchHelper.attachToRecyclerView(rvItem)
     }
 
+    // This function will let user be able to update their item on the list
     fun updateItem(item: ToDoItem){
         val dialog = AlertDialog.Builder(this)
+        dialog.setTitle("Update ToDo item")
         val view = layoutInflater.inflate(R.layout.dialog_dashboard, null)
         val toDoName = view.findViewById<EditText>(R.id.tv_todo)
         toDoName.setText(item.itemName)
         dialog.setView(view)
-        dialog.setPositiveButton("Add") { _: DialogInterface, _: Int ->
+        dialog.setPositiveButton("Update") { _: DialogInterface, _: Int ->
             if (toDoName.text.isNotEmpty()) {
                 item.itemName = toDoName.text.toString()
                 item.toDoId = todoid
@@ -84,14 +117,19 @@ class ItemActivity : AppCompatActivity() {
         }
         dialog.show()
     }
+    // This function will call refreshList function
     override fun onResume() {
         refreshList()
         super.onResume()
     }
+    // This function will refresh the list after any operations immediately
     private fun refreshList(){
-        rvItem.adapter = ItemAdapter(this, dbHandler.getToDoItems(todoid))
+        list = dbHandler.getToDoItems(todoid)
+        adapter = ItemAdapter(this, list!!)
+        rvItem.adapter = adapter
     }
 
+    // This class is my adapter that will hold my RecyclerView and menu operations for the items
     class ItemAdapter(private val activity: ItemActivity, private val list: MutableList<ToDoItem>) :
         RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
         override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
@@ -110,14 +148,25 @@ class ItemActivity : AppCompatActivity() {
                 activity.dbHandler.updateToDoItem(list[p1])
             }
             holder.delete.setOnClickListener{
-                activity.dbHandler.deleteToDoItem(list[p1].id)
-                activity.refreshList()
+                val dialog = AlertDialog.Builder(activity)
+                dialog.setTitle("Are you sure?")
+                dialog.setMessage("Do you want to delete this item?")
+                dialog.setPositiveButton("Continue") {_: DialogInterface, _: Int ->
+                    activity.dbHandler.deleteToDoItem(list[p1].id)
+                    activity.refreshList()
+                }
+                dialog.setNegativeButton("Cancel") {_: DialogInterface, _: Int ->
+
+                }
+                dialog.show()
+
             }
             holder.edit.setOnClickListener{
                 activity.updateItem(list[p1])
             }
         }
 
+        //Nested class To view the taskItem name, edit and delete
         class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
             val itemName: CheckBox = v.findViewById(R.id.cb_item)
             val edit: ImageView = v.findViewById(R.id.iv_edit)
@@ -125,6 +174,7 @@ class ItemActivity : AppCompatActivity() {
         }
     }
 
+    // Allows for the option menu globally
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == android.R.id.home) {
             finish()

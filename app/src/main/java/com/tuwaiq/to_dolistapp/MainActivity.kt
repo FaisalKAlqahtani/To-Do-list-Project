@@ -12,11 +12,13 @@ import android.widget.*
 class MainActivity : AppCompatActivity() {
     private lateinit var logo: ImageView
 
+    // Animation starts during this activity then will transfer to dashboard
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         logo = findViewById(R.id.ic_logo)
-
+        // Setting up two animations with their respective time
         logo.startAnimation(AnimationUtils.loadAnimation(this,R.anim.splash_in))
         Handler().postDelayed({
             logo.startAnimation(AnimationUtils.loadAnimation(this,R.anim.splash_out))
